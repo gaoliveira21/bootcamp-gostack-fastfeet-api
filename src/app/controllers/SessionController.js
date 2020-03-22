@@ -15,7 +15,7 @@ class SessionController {
       password: yup.string().required(),
     });
 
-    schema
+    await schema
       .validate(req.body)
       .catch(err =>
         res.status(400).json({ error: err.name, details: err.errors })
