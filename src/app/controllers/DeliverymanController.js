@@ -37,7 +37,29 @@ class DeliverymanController {
 
     const { id, name } = await Deliveryman.create(req.body);
 
-    return res.json({ id, name, email });
+    return res.status(201).json({ id, name, email });
+  }
+
+  async update(req, res) {
+    if (!Object.keys(req.body).length)
+      return res.status(400).json({ error: 'No request body sent' });
+
+    const deliveryman = await Deliveryman.findByPk(req.params.id);
+
+    const { email } = req.body;
+
+    if (email && email !== deliveryman.email) {
+      const checkDeliveryman = await Deliveryman.findOne({ where: { email } });
+
+      if (checkDeliveryman)
+        return res.status(400).json({ error: 'Deliveryman already exists' });
+    }
+
+    const { id, name, email: currentEmail } = await deliveryman.update(
+      req.body
+    );
+
+    return res.json({ id, name, email: currentEmail });
   }
 }
 
