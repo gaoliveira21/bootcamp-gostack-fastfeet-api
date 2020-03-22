@@ -61,6 +61,21 @@ class DeliverymanController {
 
     return res.json({ id, name, email: currentEmail });
   }
+
+  async delete(req, res) {
+    const { id } = req.params;
+    const deliveryman = await Deliveryman.findByPk(id);
+
+    if (!deliveryman) {
+      return res.status(404).json({
+        error: `Fails on remove deliveryman, was not found a deliveryman with id ${id}`,
+      });
+    }
+
+    await deliveryman.destroy();
+
+    return res.json({ msg: 'Deliveryman has been removed', success: true });
+  }
 }
 
 export default new DeliverymanController();
