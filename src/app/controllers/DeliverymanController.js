@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import Deliveryman from '../models/Deliveryman';
+import File from '../models/File';
 
 class DeliverymanController {
   async index(req, res) {
@@ -8,6 +9,12 @@ class DeliverymanController {
     const deliverymen = await Deliveryman.findAll({
       limit,
       offset: (page - 1) * limit,
+      attributes: ['id', 'name', 'email', 'avatar_id'],
+      include: {
+        model: File,
+        as: 'avatar',
+        attributes: ['name', 'path', 'url'],
+      },
     });
 
     return res.json(deliverymen);
@@ -20,6 +27,7 @@ class DeliverymanController {
         .string()
         .email()
         .required(),
+      avatar_id: yup.number().integer(),
     });
 
     await schema
@@ -28,25 +36,43 @@ class DeliverymanController {
         res.status(400).json({ error: err.name, details: err.errors })
       );
 
-    const { email } = req.body;
+    const { email, avatar_id } = req.body;
 
     const deliveryman = await Deliveryman.findOne({ where: { email } });
 
+    // verify if have this email registered in database
     if (deliveryman)
       return res.status(400).json({ error: 'Deliveryman already exists' });
 
+    // verify if avatar exists in database
+    if (avatar_id) {
+      const checkAvatarExists = await File.findByPk(avatar_id);
+
+      if (!checkAvatarExists)
+        return res
+          .status(404)
+          .json({ error: `Was not found a avatar file with id ${avatar_id}` });
+    }
+
     const { id, name } = await Deliveryman.create(req.body);
 
-    return res.status(201).json({ id, name, email });
+    return res.status(201).json({ id, name, email, avatar_id });
   }
 
   async update(req, res) {
     if (!Object.keys(req.body).length)
       return res.status(400).json({ error: 'No request body sent' });
 
-    const deliveryman = await Deliveryman.findByPk(req.params.id);
+    const { id } = req.params;
 
-    const { email } = req.body;
+    const deliveryman = await Deliveryman.findByPk(id);
+
+    if (!deliveryman)
+      return res
+        .status(404)
+        .json({ error: `Was not found a deliveryman with id ${id}` });
+
+    const { email, avatar_id } = req.body;
 
     if (email && email !== deliveryman.email) {
       const checkDeliveryman = await Deliveryman.findOne({ where: { email } });
@@ -55,11 +81,18 @@ class DeliverymanController {
         return res.status(400).json({ error: 'Deliveryman already exists' });
     }
 
-    const { id, name, email: currentEmail } = await deliveryman.update(
-      req.body
-    );
+    if (avatar_id && avatar_id !== deliveryman.avatar_id) {
+      const checkAvatarExists = await File.findByPk(avatar_id);
 
-    return res.json({ id, name, email: currentEmail });
+      if (!checkAvatarExists)
+        return res
+          .status(404)
+          .json({ error: `Was not found a avatar file with id ${avatar_id}` });
+    }
+
+    const { name, email: currentEmail } = await deliveryman.update(req.body);
+
+    return res.json({ id, name, email: currentEmail, avatar_id });
   }
 
   async delete(req, res) {
