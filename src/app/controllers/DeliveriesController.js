@@ -11,8 +11,6 @@ class DeliveriesController {
   async index(req, res) {
     const { page = 1, limit = 10, delivered = false } = req.query;
 
-    console.log(typeof delivered);
-
     const schema = yup.object().shape({
       id: yup
         .number()
