@@ -107,8 +107,86 @@ class OrderController {
     return res.json(orders);
   }
 
+  async update(req, res) {
+    const schema = yup.object().shape({
+      id: yup
+        .number()
+        .positive()
+        .required(),
+    });
+
+    await schema
+      .validate(req.params)
+      .catch(err =>
+        res.status(400).json({ error: err.names, details: err.errors })
+      );
+
+    if (!Object.keys(req.body).length)
+      return res.status(400).json({ error: 'No request body sent' });
+
+    const { id } = req.params;
+    const order = await Order.findByPk(id);
+
+    if (!order)
+      return res
+        .status(404)
+        .json({ error: `Was not found an order with id ${id}` });
+
+    const { deliveryman_id, recipient_id, product } = req.body;
+
+    if (deliveryman_id && deliveryman_id !== order.deliveryman_id) {
+      const deliveryman = await Deliveryman.findByPk(deliveryman_id);
+
+      if (!deliveryman)
+        return res.status(404).json({
+          error: `Was not found a deliveryman with id ${deliveryman_id}`,
+        });
+    }
+
+    if (recipient_id && recipient_id !== order.recipient_id) {
+      const recipient = await Recipient.findByPk(recipient_id);
+
+      if (!recipient)
+        return res.status(404).json({
+          error: `Was not found a recipient with id ${recipient_id}`,
+        });
+    }
+
+    const updatedOrder = await order.update({
+      recipient_id,
+      deliveryman_id,
+      product,
+    });
+
+    return res.json(updatedOrder);
+  }
+
   async delete(req, res) {
-    return res.json();
+    const schema = yup.object().shape({
+      id: yup
+        .number()
+        .positive()
+        .required(),
+    });
+
+    await schema
+      .validate(req.params)
+      .catch(err =>
+        res.status(400).json({ error: err.name, details: err.errors })
+      );
+
+    const { id } = req.params;
+
+    const order = await Order.findByPk(id);
+
+    if (!order)
+      res.status(404).json({
+        error: `Fails on remove order, was not found an order with id ${id}`,
+      });
+
+    await order.destroy();
+
+    return res.json({ msg: 'Order has been removed', success: true });
   }
 }
 
