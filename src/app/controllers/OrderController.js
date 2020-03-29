@@ -106,6 +106,10 @@ class OrderController {
 
     return res.json(orders);
   }
+
+  async delete(req, res) {
+    return res.json();
+  }
 }
 
 export default new OrderController();

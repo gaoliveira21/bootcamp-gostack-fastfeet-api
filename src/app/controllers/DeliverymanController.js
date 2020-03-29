@@ -60,6 +60,19 @@ class DeliverymanController {
   }
 
   async update(req, res) {
+    const schema = yup.object().shape({
+      id: yup
+        .number()
+        .positive()
+        .required(),
+    });
+
+    await schema
+      .validate(req.params)
+      .catch(err =>
+        res.status(400).json({ error: err.name, details: err.errors })
+      );
+
     if (!Object.keys(req.body).length)
       return res.status(400).json({ error: 'No request body sent' });
 
@@ -96,7 +109,21 @@ class DeliverymanController {
   }
 
   async delete(req, res) {
+    const schema = yup.object().shape({
+      id: yup
+        .number()
+        .positive()
+        .required(),
+    });
+
+    await schema
+      .validate(req.params)
+      .catch(err =>
+        res.status(400).json({ error: err.name, details: err.errors })
+      );
+
     const { id } = req.params;
+
     const deliveryman = await Deliveryman.findByPk(id);
 
     if (!deliveryman) {
