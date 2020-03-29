@@ -25,7 +25,7 @@ class OrderController {
         res.status(400).json({ error: err.name, details: err.errors })
       );
 
-    const { deliveryman_id, recipient_id } = req.body;
+    const { deliveryman_id, recipient_id, product } = req.body;
 
     const deliveryman = await Deliveryman.findByPk(deliveryman_id, {
       attributes: ['id', 'name', 'email'],
@@ -54,15 +54,57 @@ class OrderController {
     if (!recipient)
       return res.status(404).json({ error: 'Recipient not found' });
 
-    const { product } = await Order.create(req.body);
+    await Order.create({ recipient_id, deliveryman_id, product });
 
-    return res.json({
+    return res.status(201).json({
       order: {
         product,
         recipient,
         deliveryman,
       },
     });
+  }
+
+  async index(req, res) {
+    const { page = 1, limit = 10 } = req.query;
+
+    const orders = await Order.findAll({
+      limit,
+      offset: (page - 1) * limit,
+      attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
+      include: [
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['id', 'name', 'email'],
+          include: {
+            model: File,
+            as: 'avatar',
+            attributes: ['id', 'path', 'url'],
+          },
+        },
+        {
+          model: Recipient,
+          as: 'recipient',
+          attributes: [
+            'id',
+            'name',
+            'cep',
+            'city',
+            'street',
+            'number',
+            'complement',
+          ],
+        },
+        {
+          model: File,
+          as: 'signature',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
+
+    return res.json(orders);
   }
 }
 
