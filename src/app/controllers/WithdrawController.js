@@ -26,13 +26,15 @@ class WithdrawController {
     const { deliveryId, id } = req.params;
 
     const order = await Order.findOne({
-      where: { deliveryman_id: id, id: deliveryId, end_date: null },
+      where: {
+        deliveryman_id: id,
+        id: deliveryId,
+        end_date: null,
+        start_date: null,
+      },
     });
 
     if (!order) return res.status(404).json({ error: 'Order not found' });
-
-    if (order.start_date)
-      return res.status(400).json({ error: 'Order already withdrawn' });
 
     const start_date = new Date();
 
@@ -48,6 +50,7 @@ class WithdrawController {
 
     const ordersTaken = await Order.count({
       where: {
+        deliveryman_id: id,
         start_date: {
           [Op.gte]: getDay(start_date),
         },
@@ -59,8 +62,6 @@ class WithdrawController {
         .status(401)
         .json({ error: 'Are permitted five withdrawals in a day' });
     }
-
-    console.log(ordersTaken);
 
     await order.update({ start_date });
 
