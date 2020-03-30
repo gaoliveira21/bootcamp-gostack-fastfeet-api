@@ -5,6 +5,8 @@ import Deliveryman from '../models/Deliveryman';
 import Recipient from '../models/Recipient';
 import File from '../models/File';
 
+import Mail from '../../lib/Mail';
+
 class OrderController {
   async store(req, res) {
     const schema = yup.object().shape({
@@ -58,6 +60,12 @@ class OrderController {
       recipient_id,
       deliveryman_id,
       product,
+    });
+
+    await Mail.sendMail({
+      to: `${deliveryman.name} <${deliveryman.email}>`,
+      subject: 'Cadastro de encomenda',
+      text: `Nova encomenda disponivel para retirada. Produto: ${product}`,
     });
 
     return res.status(201).json({
