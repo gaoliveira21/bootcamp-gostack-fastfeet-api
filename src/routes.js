@@ -8,7 +8,8 @@ import RecipientController from './app/controllers/RecipientController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import FileController from './app/controllers/FileController';
 import OrderController from './app/controllers/OrderController';
-import DeliveriesController from './app/controllers/DeliveriesController';
+import DeliveryController from './app/controllers/DeliveryController';
+import WithdrawController from './app/controllers/WithdrawController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -17,7 +18,11 @@ const uploads = multer(multerConfig);
 
 routes.post('/sessions', SessionController.store);
 
-routes.get('/deliveryman/:id/deliveries', DeliveriesController.index);
+routes.get('/deliveryman/:id/deliveries', DeliveryController.index);
+routes.post(
+  '/deliveryman/:id/deliveries/:deliveryId/withdraw',
+  WithdrawController.store
+);
 
 routes.use(authMiddleware);
 

@@ -1,4 +1,3 @@
-import { parseISO, isWithinInterval } from 'date-fns';
 import * as yup from 'yup';
 import { Op } from 'sequelize';
 
@@ -7,7 +6,7 @@ import Deliveryman from '../models/Deliveryman';
 import Recipient from '../models/Recipient';
 import File from '../models/File';
 
-class DeliveriesController {
+class DeliveryController {
   async index(req, res) {
     const { page = 1, limit = 10, delivered = false } = req.query;
 
@@ -66,4 +65,4 @@ class DeliveriesController {
   }
 }
 
-export default new DeliveriesController();
+export default new DeliveryController();

@@ -54,10 +54,15 @@ class OrderController {
     if (!recipient)
       return res.status(404).json({ error: 'Recipient not found' });
 
-    await Order.create({ recipient_id, deliveryman_id, product });
+    const { id } = await Order.create({
+      recipient_id,
+      deliveryman_id,
+      product,
+    });
 
     return res.status(201).json({
       order: {
+        id,
         product,
         recipient,
         deliveryman,
@@ -186,7 +191,7 @@ class OrderController {
 
     await order.destroy();
 
-    return res.json({ msg: 'Order has been removed', success: true });
+    return res.json({ msg: 'Order was removed', success: true });
   }
 }
 

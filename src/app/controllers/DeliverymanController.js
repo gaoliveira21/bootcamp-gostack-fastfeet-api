@@ -134,7 +134,7 @@ class DeliverymanController {
 
     await deliveryman.destroy();
 
-    return res.json({ msg: 'Deliveryman has been removed', success: true });
+    return res.json({ msg: 'Deliveryman was removed', success: true });
   }
 }
 
