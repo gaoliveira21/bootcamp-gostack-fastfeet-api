@@ -65,7 +65,12 @@ class OrderController {
     await Mail.sendMail({
       to: `${deliveryman.name} <${deliveryman.email}>`,
       subject: 'Cadastro de encomenda',
-      text: `Nova encomenda disponivel para retirada. Produto: ${product}`,
+      template: 'orders',
+      context: {
+        deliveryman: deliveryman.name,
+        recipient: recipient.dataValues,
+        product,
+      },
     });
 
     return res.status(201).json({
