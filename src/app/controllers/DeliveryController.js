@@ -5,6 +5,7 @@ import Order from '../models/Order';
 import Deliveryman from '../models/Deliveryman';
 import Recipient from '../models/Recipient';
 import File from '../models/File';
+import DeliveryProblem from '../models/DeliveryProblem';
 
 class DeliveryController {
   async index(req, res) {
@@ -62,6 +63,36 @@ class DeliveryController {
     });
 
     return res.json(orders);
+  }
+
+  async delete(req, res) {
+    const schema = yup.object().shape({
+      id: yup
+        .number()
+        .positive()
+        .required(),
+    });
+
+    await schema.validate(req.params).catch(err =>
+      res.status(400).json({
+        error: err.name,
+        details: err.errors,
+      })
+    );
+
+    const { id } = req.params;
+
+    const problem = await DeliveryProblem.findByPk(id);
+
+    if (!problem) return res.status(404).json({ error: 'Problem not found' });
+
+    const { delivery_id } = problem;
+
+    const order = await Order.findByPk(delivery_id);
+
+    await order.update({ canceled_at: new Date() });
+
+    return res.json(order);
   }
 }
 
