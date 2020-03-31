@@ -11,6 +11,7 @@ import OrderController from './app/controllers/OrderController';
 import DeliveryController from './app/controllers/DeliveryController';
 import WithdrawController from './app/controllers/WithdrawController';
 import FinishController from './app/controllers/FinishController';
+import DeliveryProblemController from './app/controllers/DeliveryProblemController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -28,6 +29,9 @@ routes.post(
   '/deliveryman/:id/deliveries/:deliveryId/finish',
   FinishController.store
 );
+
+routes.get('/delivery/problems', DeliveryProblemController.index);
+routes.get('/delivery/:id/problems', DeliveryProblemController.show);
 
 routes.use(authMiddleware);
 
