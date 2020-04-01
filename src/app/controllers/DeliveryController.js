@@ -7,6 +7,8 @@ import Recipient from '../models/Recipient';
 import File from '../models/File';
 import DeliveryProblem from '../models/DeliveryProblem';
 
+import Mail from '../../lib/Mail';
+
 class DeliveryController {
   async index(req, res) {
     const { page = 1, limit = 10, delivered = false } = req.query;
@@ -88,9 +90,34 @@ class DeliveryController {
 
     const { delivery_id } = problem;
 
-    const order = await Order.findByPk(delivery_id);
+    const order = await Order.findByPk(delivery_id, {
+      include: [
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['name', 'email'],
+        },
+        {
+          model: Recipient,
+          as: 'recipient',
+          attributes: ['name', 'city', 'street', 'number'],
+        },
+      ],
+    });
 
     await order.update({ canceled_at: new Date() });
+
+    await Mail.sendMail({
+      to: `${order.deliveryman.name} <${order.deliveryman.email}>`,
+      subject: 'Entrega cancelada',
+      template: 'cancellation',
+      context: {
+        deliveryman: order.deliveryman.name,
+        product: order.product,
+        recipient: order.recipient.dataValues,
+        problem: problem.description,
+      },
+    });
 
     return res.json(order);
   }
