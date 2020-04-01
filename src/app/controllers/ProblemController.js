@@ -3,25 +3,8 @@ import * as yup from 'yup';
 import DeliveryProblem from '../models/DeliveryProblem';
 import Order from '../models/Order';
 
-class DeliveryProblemController {
+class ProblemController {
   async index(req, res) {
-    const { page = 1, limit = 10 } = req.query;
-
-    const problems = await DeliveryProblem.findAll({
-      limit,
-      offset: (page - 1) * limit,
-      include: {
-        model: Order,
-        as: 'order',
-      },
-    });
-
-    const orders = problems.map(problem => problem.order);
-
-    return res.json(orders);
-  }
-
-  async show(req, res) {
     const schema = yup.object().shape({
       id: yup
         .number()
@@ -51,6 +34,35 @@ class DeliveryProblemController {
 
     return res.json(problems);
   }
+
+  async store(req, res) {
+    const schema = yup.object().shape({
+      description: yup.string().required(),
+      id: yup
+        .number()
+        .positive()
+        .required(),
+    });
+
+    const data = Object.assign(req.body, req.params);
+
+    await schema.validate(data).catch(err =>
+      res.status(400).json({
+        error: err.name,
+        details: err.errors,
+      })
+    );
+
+    const { id, description } = data;
+
+    const order = await Order.findByPk(id);
+
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+
+    const problem = await DeliveryProblem.create({ description });
+
+    return res.status(201).json(problem);
+  }
 }
 
-export default new DeliveryProblemController();
+export default new ProblemController();
