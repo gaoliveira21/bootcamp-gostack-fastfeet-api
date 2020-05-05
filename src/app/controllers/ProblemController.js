@@ -59,7 +59,10 @@ class ProblemController {
 
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
-    const problem = await DeliveryProblem.create({ description });
+    const problem = await DeliveryProblem.create({
+      description,
+      delivery_id: order.id,
+    });
 
     return res.status(201).json(problem);
   }
