@@ -2,4 +2,4 @@
   <img src="./.github/fastfeet-logo.png">
 </p>
 
-# Desafio do bootcamp gostack - API FastFeet
+<h3 aling="center">Desafio do bootcamp gostack :rocket: - API para a transportadora fictícia FastFeet</h3>
