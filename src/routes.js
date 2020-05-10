@@ -40,6 +40,7 @@ routes.delete('/problem/:id/cancel-delivery', DeliveryController.delete);
 
 routes.get('/delivery/problems', DeliveryWithProblemController.index);
 
+routes.get('/recipients', RecipientController.index);
 routes.post('/recipients', RecipientController.store);
 routes.put('/recipients/:id', RecipientController.update);
 
