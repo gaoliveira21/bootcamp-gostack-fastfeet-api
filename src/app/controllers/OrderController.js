@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { Op } from 'sequelize';
 
 import Order from '../models/Order';
 import Deliveryman from '../models/Deliveryman';
@@ -80,9 +81,14 @@ class OrderController {
   }
 
   async index(req, res) {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, product = '' } = req.query;
 
     const orders = await Order.findAll({
+      where: {
+        product: {
+          [Op.like]: `${product}%`,
+        },
+      },
       limit,
       offset: (page - 1) * limit,
       attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
