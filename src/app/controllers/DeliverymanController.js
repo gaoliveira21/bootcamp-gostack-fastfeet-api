@@ -1,12 +1,18 @@
 import * as yup from 'yup';
+import { Op } from 'sequelize';
 import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 
 class DeliverymanController {
   async index(req, res) {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, name = '' } = req.query;
 
     const deliverymen = await Deliveryman.findAll({
+      where: {
+        name: {
+          [Op.like]: `${name}%`,
+        },
+      },
       limit,
       offset: (page - 1) * limit,
       attributes: ['id', 'name', 'email', 'avatar_id'],
