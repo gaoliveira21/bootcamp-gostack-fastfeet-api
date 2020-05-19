@@ -24,7 +24,7 @@ class ProblemController {
       where: {
         delivery_id: id,
       },
-      attributes: ['id', 'description'],
+      attributes: ['id', 'description', 'delivery_id'],
     });
 
     if (!problems)

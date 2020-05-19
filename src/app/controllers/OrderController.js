@@ -114,6 +114,7 @@ class OrderController {
             'street',
             'number',
             'complement',
+            'state',
           ],
         },
         {
