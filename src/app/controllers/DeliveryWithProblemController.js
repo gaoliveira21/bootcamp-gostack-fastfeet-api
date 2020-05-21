@@ -1,5 +1,3 @@
-import { Op } from 'sequelize';
-
 import DeliveryProblem from '../models/DeliveryProblem';
 import Order from '../models/Order';
 import File from '../models/File';
@@ -10,7 +8,7 @@ class DeliveryWithProblemController {
     const { page = 1, limit = 10 } = req.query;
 
     const DeliveriesWithProblem = await DeliveryProblem.findAll({
-      order: [['delivery_id', 'ASC']],
+      order: [['created_at', 'DESC']],
       limit,
       offset: (page - 1) * limit,
       attributes: ['id', 'description'],

@@ -89,6 +89,7 @@ class OrderController {
           [Op.like]: `${product}%`,
         },
       },
+      order: [['created_at', 'DESC']],
       limit,
       offset: (page - 1) * limit,
       attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
