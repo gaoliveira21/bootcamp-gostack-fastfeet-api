@@ -79,6 +79,32 @@ class RecipientController {
       cep,
     });
   }
+
+  async delete(req, res) {
+    const schema = yup.object().shape({
+      id: yup
+        .number()
+        .positive()
+        .required(),
+    });
+
+    await schema
+      .validate(req.params)
+      .catch(err =>
+        res.status(400).json({ error: err.name, details: err.errors })
+      );
+
+    const { id } = req.params;
+
+    const recipient = await Recipient.findByPk(id);
+
+    if (!recipient)
+      return res.status(404).json({ error: 'Recipient not found' });
+
+    recipient.destroy();
+
+    return res.status(204).json();
+  }
 }
 
 export default new RecipientController();
