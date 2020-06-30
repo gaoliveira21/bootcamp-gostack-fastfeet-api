@@ -24,6 +24,7 @@ class RecipientController {
         'city',
         'cep',
       ],
+      order: [['id', 'DESC']],
     });
 
     return res.json(recipient);
