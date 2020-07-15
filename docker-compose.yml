@@ -1,0 +1,22 @@
+
+
+version: "3"
+services:
+  postgresdb:
+    image: postgres
+    container_name: postgresql_gobarber
+    restart: unless-stopped
+    environment:
+      - "POSTGRES_PASSWORD=102030"
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  redisdb:
+    image: redis
+    container_name: redisdb_gobarber
+    restart: unless-stopped
+    volumes:
+      - ./data/redisdb:/data
+    ports:
+      - "6379:6379"
