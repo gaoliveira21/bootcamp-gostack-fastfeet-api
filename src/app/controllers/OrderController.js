@@ -126,7 +126,10 @@ class OrderController {
       ],
     });
 
-    return res.json(orders);
+    const totalRecords = await Order.count();
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    return res.json({ orders, totalRecords, totalPages });
   }
 
   async update(req, res) {
