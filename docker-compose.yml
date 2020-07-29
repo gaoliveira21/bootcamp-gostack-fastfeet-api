@@ -4,7 +4,7 @@ version: "3"
 services:
   postgresdb:
     image: postgres
-    container_name: postgresql_gobarber
+    container_name: postgresql_fastfeet
     restart: unless-stopped
     environment:
       - "POSTGRES_PASSWORD=102030"
@@ -14,7 +14,7 @@ services:
       - "5432:5432"
   redisdb:
     image: redis
-    container_name: redisdb_gobarber
+    container_name: redisdb_fastfeet
     restart: unless-stopped
     volumes:
       - ./data/redisdb:/data
