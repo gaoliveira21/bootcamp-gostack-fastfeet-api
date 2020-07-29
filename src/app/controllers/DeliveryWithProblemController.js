@@ -41,7 +41,10 @@ class DeliveryWithProblemController {
       ],
     });
 
-    return res.json(DeliveriesWithProblem);
+    const totalRecords = await DeliveryProblem.count();
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    return res.json({ DeliveriesWithProblem, totalRecords, totalPages });
   }
 }
 
