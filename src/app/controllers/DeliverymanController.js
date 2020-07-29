@@ -23,7 +23,10 @@ class DeliverymanController {
       },
     });
 
-    return res.json(deliverymen);
+    const totalRecords = await Deliveryman.count();
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    return res.json({ deliverymen, totalRecords, totalPages });
   }
 
   async store(req, res) {
