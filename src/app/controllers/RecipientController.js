@@ -6,7 +6,7 @@ class RecipientController {
   async index(req, res) {
     const { page = 1, limit = 10, name = '' } = req.query;
 
-    const recipient = await Recipient.findAll({
+    const recipients = await Recipient.findAll({
       where: {
         name: {
           [Op.like]: `${name}%`,
@@ -30,7 +30,7 @@ class RecipientController {
     const totalRecords = await Recipient.count();
     const totalPages = Math.ceil(totalRecords / limit);
 
-    return res.json({ recipient, totalRecords, totalPages });
+    return res.json({ recipients, totalRecords, totalPages });
   }
 
   async store(req, res) {

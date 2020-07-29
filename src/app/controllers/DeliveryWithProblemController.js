@@ -7,7 +7,7 @@ class DeliveryWithProblemController {
   async index(req, res) {
     const { page = 1, limit = 10 } = req.query;
 
-    const DeliveriesWithProblem = await DeliveryProblem.findAll({
+    const problems = await DeliveryProblem.findAll({
       order: [['created_at', 'DESC']],
       limit,
       offset: (page - 1) * limit,
@@ -44,7 +44,7 @@ class DeliveryWithProblemController {
     const totalRecords = await DeliveryProblem.count();
     const totalPages = Math.ceil(totalRecords / limit);
 
-    return res.json({ DeliveriesWithProblem, totalRecords, totalPages });
+    return res.json({ problems, totalRecords, totalPages });
   }
 }
 
