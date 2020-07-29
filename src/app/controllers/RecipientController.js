@@ -27,7 +27,10 @@ class RecipientController {
       order: [['id', 'DESC']],
     });
 
-    return res.json(recipient);
+    const totalRecords = await Recipient.count();
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    return res.json({ recipient, totalRecords, totalPages });
   }
 
   async store(req, res) {
