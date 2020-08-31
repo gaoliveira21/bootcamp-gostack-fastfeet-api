@@ -15,7 +15,7 @@ class DeliverymanController {
       },
       limit,
       offset: (page - 1) * limit,
-      attributes: ['id', 'name', 'email', 'avatar_id'],
+      attributes: ['id', 'name', 'email', 'avatar_id', 'access_id'],
       include: {
         model: File,
         as: 'avatar',
@@ -45,7 +45,7 @@ class DeliverymanController {
         res.status(400).json({ error: err.name, details: err.errors })
       );
 
-    const { email, avatar_id } = req.body;
+    const { email, avatar_id, name } = req.body;
 
     const deliveryman = await Deliveryman.findOne({ where: { email } });
 
@@ -63,9 +63,15 @@ class DeliverymanController {
           .json({ error: `Was not found a avatar file with id ${avatar_id}` });
     }
 
-    const { id, name } = await Deliveryman.create(req.body);
+    const access_id = await Deliveryman.accessIdGenerate();
+    const { id } = await Deliveryman.create({
+      name,
+      email,
+      access_id,
+      avatar_id,
+    });
 
-    return res.status(201).json({ id, name, email, avatar_id });
+    return res.status(201).json({ id, name, email, avatar_id, access_id });
   }
 
   async update(req, res) {
